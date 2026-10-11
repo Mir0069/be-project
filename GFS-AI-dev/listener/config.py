@@ -1,0 +1,15 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+SERVICE_BUS_CONNECTION_STRING = os.getenv(
+    "AZURE_SERVICE_BUS_CONNECTION_STRING"
+)
+
+SERVICE_BUS_QUEUE_NAME = os.getenv(
+    "AZURE_SERVICE_BUS_QUEUE_NAME"
+)
+
+print("CONN =", SERVICE_BUS_CONNECTION_STRING)
+print("QUEUE =", SERVICE_BUS_QUEUE_NAME)

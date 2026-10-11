@@ -1,0 +1,75 @@
+"""
+extraction/schema_builder.py
+=============================
+Converts the raw extraction JSON (Vision output) into a unified
+MongoDB document using the schema defined in config/unified_schema.py.
+
+Usage:
+    from extraction.schema_builder import build_unified_doc
+
+    extraction_json = json.loads(Path("final_result.json").read_text())
+    doc = build_unified_doc(extraction_json)
+    # → store doc in MongoDB
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from typing import Optional
+
+from config.unified_schema import build_empty_doc, write_extracted_value, _empty_unit
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+# Maps extraction JSON signal groups to unified schema field names
+_HEADER_MAP = {
+    "project_name":    "project_name",
+    "project_address": "project_address",
+    "project_type":    "project_type",
+    "architect_name":  "architect",
+    "contact_name":    "contact_name",
+    "contact_phone":   "contact_phone",
+    "contact_email":   "contact_email",
+}
+
+_GLASS_MAP = {
+    "is_walkable":                "is_walkable",
+    "is_exterior":                "is_exterior",
+    "has_air_gap":                "has_air_gap",
+    "has_conditioned_space_below":"has_conditioned_space_below",
+    "is_stair_tread":             "is_stair_tread",
+    "is_egr":                     "is_egr",
+    "is_replacement_glass_only":  "is_replacement_glass_only",
+    "is_glass_2_0":               "is_glass_2_0",
+}
+
+_FRAME_MAP = {
+    "frame_type_stated":       "frame_type_stated",
+    "install_type":            "install_type",
+    "assembly_type":           "assembly_type",
+    "is_existing_structure":   "is_existing_structure",
+    "is_new_deck_construction":"is_new_deck_construction",
+}
+
+_LOCATION_MAP = {
+    "project_country": "project_country",
+    "project_address": "project_country",  # location_signals also has address
+    "is_expedited":    "is_expedited",
+}
+
+_ADDON_MAP = {
+    "has_nanodot":        "has_nanodot",
+    "has_seeded_organic": "has_seeded_organic",
+    "has_krypton":        "has_krypton",
+}
+
+# Unit label letters A-J
+_UNIT_LABELS = list("ABCDEFGHIJ")
+
+
+def build_unified_doc(extraction_json: dict) -> dict:
+    """
+    Convert extraction JSON to unified MongoDB document.

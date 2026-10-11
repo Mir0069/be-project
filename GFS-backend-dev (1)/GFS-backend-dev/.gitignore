@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+coverage/
+
+# Environment
+.env*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# TypeScript
+*.tsbuildinfo
+
+# Local scratch (cached tokens, fetched transcripts, diagnostic reports)
+temp/
+
+pnpm-lock.yaml
+pnpm-workspace.yaml
+
+# Local agent/editor tooling config
+.claude/
+.codegraph/
+
+# Local document cache / uploads
+uploads/

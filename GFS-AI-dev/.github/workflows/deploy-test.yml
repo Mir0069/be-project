@@ -1,0 +1,75 @@
+name: Deploy GFS AI (Test)
+
+on:
+  push:
+    branches: [test]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+
+    env:
+      ACR_NAME: gfstestacr001
+      RESOURCE_GROUP: rg_GFS_TEST
+      CONTAINER_APP_NAME: gfs-ai
+      IMAGE_NAME: gfs-ai-test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to ACR
+        run: |
+          az acr login --name $ACR_NAME
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} .
+
+      - name: Push Docker Image
+        run: |
+          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+
+      - name: Deploy AI
+        run: |
+          az containerapp update \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --image $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} \
+            --cpu 2 \
+            --memory 4Gi \
+            --set-env-vars \
+            AZURE_OPENAI_KEY='${{ secrets.AZURE_OPENAI_KEY_TEST }}' \
+            AZURE_OPENAI_ENDPOINT='${{ secrets.AZURE_OPENAI_ENDPOINT_TEST }}' \
+            AZURE_OPENAI_CHAT_DEPLOYMENT='${{ secrets.AZURE_OPENAI_CHAT_DEPLOYMENT_TEST }}' \
+            AZURE_OPENAI_API_VERSION='${{ secrets.AZURE_OPENAI_API_VERSION_TEST }}' \
+            AZURE_SERVICE_BUS_CONNECTION_STRING='${{ secrets.AZURE_SERVICE_BUS_CONNECTION_STRING_TEST }}' \
+            AZURE_SERVICE_BUS_QUEUE_NAME='${{ secrets.AZURE_SERVICE_BUS_QUEUE_NAME_TEST }}' \
+            AZURE_SERVICE_BUS_EXTRACTION_STAGE_QUEUE_NAME='${{ secrets.AZURE_SERVICE_BUS_EXTRACTION_STAGE_QUEUE_NAME_TEST }}' \
+            AZURE_SERVICE_BUS_EXTRACTION_STAGE_DLQ_NAME='${{ secrets.AZURE_SERVICE_BUS_EXTRACTION_STAGE_DLQ_NAME_TEST }}' \
+            AZURE_SERVICE_BUS_EXTRACTION_RESULT_QUEUE_NAME='${{ secrets.AZURE_SERVICE_BUS_EXTRACTION_RESULT_QUEUE_NAME_TEST }}' \
+            AZURE_SERVICE_BUS_EXTRACTION_RESULT_DLQ_NAME='${{ secrets.AZURE_SERVICE_BUS_EXTRACTION_RESULT_DLQ_NAME_TEST }}' \
+            AZURE_SERVICE_BUS_TEAMS_QUEUE_NAME='${{ secrets.AZURE_SERVICE_BUS_TEAMS_QUEUE_NAME_TEST }}' \
+            AZURE_SERVICE_BUS_TEAMS_DLQ_NAME='${{ secrets.AZURE_SERVICE_BUS_TEAMS_DLQ_NAME_TEST }}' \
+            WEBHOOK_URL='${{ secrets.WEBHOOK_URL_TEST }}' \
+            FASTAPI_BASE_URL='${{ secrets.FASTAPI_BASE_URL_TEST }}' \
+            APP_BASE_URL='${{ secrets.APP_BASE_URL_TEST }}' \
+            GFS_EMAIL='${{ secrets.GFS_EMAIL_TEST }}' \
+            GFS_PASSWORD='${{ secrets.GFS_PASSWORD_TEST }}' \
+            AZURE_DOC_INTELLIGENCE_ENDPOINT='${{ secrets.AZURE_DOC_INTELLIGENCE_ENDPOINT_TEST }}' \
+            AZURE_DOC_INTELLIGENCE_KEY='${{ secrets.AZURE_DOC_INTELLIGENCE_KEY_TEST }}' \
+            MONGO_URI='${{ secrets.MONGO_URI_TEST }}' \
+            STAGE0_WEBHOOK_PATH='${{ secrets.STAGE0_WEBHOOK_PATH_TEST }}' \
+            STAGE_RESULT_WEBHOOK_PATH='${{ secrets.STAGE_RESULT_WEBHOOK_PATH_TEST }}' \
+            AI_ENV='${{ secrets.AI_ENV_TEST }}'

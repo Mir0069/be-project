@@ -1,0 +1,427 @@
+diff --git a/src/db/models/proposal.model.ts b/src/db/models/proposal.model.ts
+index 322ec91..2d96b49 100644
+--- a/src/db/models/proposal.model.ts
++++ b/src/db/models/proposal.model.ts
+@@ -264,6 +264,7 @@ export interface IProjectSchema {
+       perimeter_lf: IBaseField<number>;
+       silicone_tubes: IBaseField<number>;
+       total_man_hours: IBaseField<number>;
++      total_packaging: IBaseField<number>;
+     };
+   };
+   units: Record<string, IUnitField>; // keys A through J
+diff --git a/src/features/proposal/excel/graph.generator.ts b/src/features/proposal/excel/graph.generator.ts
+index b78478d..1a192a7 100644
+--- a/src/features/proposal/excel/graph.generator.ts
++++ b/src/features/proposal/excel/graph.generator.ts
+@@ -19,7 +19,7 @@ import { env } from '@config/env';
+ import { AppError } from '@shared/errors/app.error';
+ import { ErrorCode } from '@shared/errors/error-codes';
+ import { findLabelRow } from './pricing-snapshot';
+-import { UNIT_KEYS, resolveUnitDescription, resolveUnitManHours } from '../unit-derived-values';
++import { UNIT_KEYS, resolveUnitDescription, resolveUnitManHours, resolveUnitPackaging } from '../unit-derived-values';
+ import {
+   hasRealUnitData,
+   matchFrameTypeKey,
+@@ -78,7 +78,7 @@ const UNIT_SELECTION_COLUMNS = ['D', 'G', 'J', 'M', 'P', 'S', 'V', 'Y', 'AB', 'A
+ const UNIT_QUANTITY_COLUMNS = ['E', 'H', 'K', 'N', 'Q', 'T', 'W', 'Z', 'AC', 'AF'] as const;
+ const UNIT_AMOUNT_COLUMNS = ['F', 'I', 'L', 'O', 'R', 'U', 'X', 'AA', 'AD', 'AG'] as const;
+ const DIRECT_QUANTITY_ROWS = new Set([
+-  'C64', 'C68', 'C73',
++  'C64', 'C68',
+   'C75', 'C76', 'C77', 'C78', 'C79', 'C80', 'C81', 'C82', 'C85',
+ ]);
+ const DIRECT_AMOUNT_ROWS = new Set(['C68', 'C75', 'C81']);
+@@ -463,6 +463,29 @@ const buildResolvedPricingCells = (
+     }
+   }
+ 
++ // Row 73 (Packaging): distribute per-unit packaging into unit quantity columns (E73 = Unit A, H73 = Unit B, ...)
++  const packagingRow = '73';
++  let totalDistributedPackaging = 0;
++  if (activeUnitKeys.length > 0) {
++    for (let i = 0; i < UNIT_QUANTITY_COLUMNS.length; i++) {
++      const col = UNIT_QUANTITY_COLUMNS[i];
++      const unitKey = String.fromCharCode(65 + i);
++      const unitPackaging = resolveUnitPackaging(schema, unitKey);
++      if (unitPackaging != null && unitPackaging > 0) {
++        cells[`${col}${packagingRow}`] = unitPackaging;
++        totalDistributedPackaging += unitPackaging;
++      } else if (activeUnitKeys.includes(unitKey)) {
++        cells[`${col}${packagingRow}`] = 0;
++      }
++    }
++  }
++  if (totalDistributedPackaging === 0) {
++    const fallbackPackaging = calculation?.metrics?.totalPackaging ?? schema.stage_5?.calculated?.total_packaging?.value ?? null;
++    if (fallbackPackaging != null && Number.isFinite(Number(fallbackPackaging)) && Number(fallbackPackaging) > 0) {
++      cells[`E${packagingRow}`] = Number(fallbackPackaging);
++    }
++  }
++
+   // Custom gasket, Engineering, and Custom Upcharge do not have a usable
+   // quantity/amount formula in the supplied template. Stamp their resolved
+   // amount directly so the Excel total remains identical to the backend
+diff --git a/src/features/proposal/final-parameters.calculator.ts b/src/features/proposal/final-parameters.calculator.ts
+index bd602c2..f2ff277 100644
+--- a/src/features/proposal/final-parameters.calculator.ts
++++ b/src/features/proposal/final-parameters.calculator.ts
+@@ -3,6 +3,7 @@ import { FINAL_PARAMETERS_SCHEMA, type FinalParameterFieldSchema } from './schem
+ import { UNIT_KEYS, resolveUnitManHours } from './unit-derived-values';
+ import { PRODUCT_CELLS } from './unit-pricing-products';
+ import { buildUnitPricingLines, type UnitPricingLine } from './unit-pricing-lines';
++import { UNIT_KEYS, resolveUnitManHours, resolveUnitPackaging } from './unit-derived-values';
+ 
+ export type FinalParameterPricingType = 'unit' | 'percentage' | 'manual' | 'conditional';
+ export type FinalParameterSelection = 'Y' | 'N';
+@@ -54,6 +55,7 @@ export type FinalParameterCalculation = {
+     paintLf: number;
+     alternateSqft: number;
+     totalManHours: number;
++    totalPackaging: number;
+   };
+ };
+ 
+@@ -66,6 +68,7 @@ type UnitMetrics = {
+   verticalRafters: number;
+   horizontalRafters: number;
+   manHours: number;
++  packaging: number;
+   sqft: number;
+   perimeterLf: number;
+   crossbeamLengthIn: number;
+@@ -127,6 +130,7 @@ const getUnitMetrics = (schema: IProjectSchema): UnitMetrics[] => Object.entries
+     const panelCount = readNumber(unit.value_panel_count);
+     const numUnits = Math.max(1, readNumber(unit.value_num_units, 1));
+     const manHours = resolveUnitManHours(schema, unitKey) ?? 0;
++    const packaging = resolveUnitPackaging(schema, unitKey) ?? 0;
+     const stage6VertRafters = readOptionalNumber(
+       schema.stage_6?.cells?.[unit.excel_vert_rafter_cell ?? `K${unitTakeoffRow}`],
+     );
+@@ -173,6 +177,7 @@ const getUnitMetrics = (schema: IProjectSchema): UnitMetrics[] => Object.entries
+       verticalRafters,
+       horizontalRafters,
+       manHours,
++      packaging,
+       // These formulas intentionally mirror Pricing Worksheet H/I/N rows.
+       sqft: (widthIn * lengthIn) / 144,
+       perimeterLf: (2 * (widthIn + lengthIn)) / 12,
+@@ -209,7 +214,7 @@ const getManualQuantity = (schema: IProjectSchema, cell: string): number | null
+     C68: ['custom_gasket'],
+     C69: ['three_m_tape', 'tape'],
+     C71: ['man_hours', 'total_man_hours'],
+-    C73: ['packaging'],
++    C73: ['packaging', 'total_packaging'],
+     C75: ['engineering'],
+     C76: ['stamped_drawings'],
+     C77: ['calculations_glass_only_no_igu'],
+@@ -242,7 +247,7 @@ const getManualQuantity = (schema: IProjectSchema, cell: string): number | null
+     if (existing !== null) return existing;
+   }
+   if (cell === 'C73') {
+-    const existing = readOptionalNumber(schema.stage_4?.takeoff?.packaging);
++    const existing = readOptionalNumber(schema.stage_5?.calculated?.total_packaging);
+     if (existing !== null) return existing;
+   }
+ 
+@@ -323,7 +328,6 @@ const getSummary = (schema: IProjectSchema, metrics: ReturnType<typeof calculate
+     crossbeam: fieldValue(schema.stage_4?.crossbeam),
+     panel_count: fieldValue(schema.stage_4?.takeoff?.panel_count),
+     takeoff: {
+-      packaging: fieldValue(schema.stage_4?.takeoff?.packaging),
+       perimeter_lf: metrics.perimeterLf,
+       total_crossbeam_length_in: metrics.totalCrossbeamLengthIn,
+     },
+@@ -337,6 +341,7 @@ const getSummary = (schema: IProjectSchema, metrics: ReturnType<typeof calculate
+       perimeter_lf: metrics.perimeterLf,
+       silicone_tubes: fieldValue(schema.stage_5?.calculated?.silicone_tubes),
+       total_man_hours: fieldValue(schema.stage_5?.calculated?.total_man_hours),
++      total_packaging: fieldValue(schema.stage_5?.calculated?.total_packaging),
+     },
+   },
+   stage_6: {
+@@ -357,6 +362,7 @@ type CalculatedMetrics = {
+   paintLf: number;
+   alternateSqft: number;
+   totalManHours: number;
++  totalPackaging:number;
+ };
+ 
+ function calculateMetrics(schema: IProjectSchema): CalculatedMetrics {
+@@ -364,12 +370,15 @@ function calculateMetrics(schema: IProjectSchema): CalculatedMetrics {
+   const storedSqft = readOptionalNumber(schema.stage_5?.calculated?.total_sqft);
+   const storedPerimeter = readOptionalNumber(schema.stage_5?.calculated?.perimeter_lf);
+   const storedManHours = readOptionalNumber(schema.stage_5?.calculated?.total_man_hours);
++  const storedPackaging = readOptionalNumber(schema.stage_5?.calculated?.total_packaging);
+   const derivedSqft = units.reduce((sum, unit) => sum + unit.sqft, 0);
+   const derivedPerimeter = units.reduce((sum, unit) => sum + unit.perimeterLf, 0);
+   const derivedManHours = units.reduce((sum, unit) => sum + unit.manHours, 0);
++  const derivedPackaging = units.reduce((sum, unit) => sum + unit.packaging, 0);
+   const totalSqft = units.length > 0 ? derivedSqft : storedSqft ?? 0;
+   const perimeterLf = units.length > 0 ? derivedPerimeter : storedPerimeter ?? 0;
+   const totalManHours = units.length > 0 && derivedManHours > 0 ? derivedManHours : storedManHours ?? derivedManHours;
++  const totalPackaging = units.length > 0 && derivedPackaging > 0 ? derivedPackaging : storedPackaging ?? derivedPackaging;
+   const totalCrossbeamLengthIn = units.reduce((sum, unit) => sum + unit.crossbeamLengthIn, 0);
+   const rafterLf = totalCrossbeamLengthIn / 12;
+   const verticalRafterCount = units.reduce((sum, unit) => sum + unit.verticalRafters, 0);
+@@ -391,6 +400,7 @@ function calculateMetrics(schema: IProjectSchema): CalculatedMetrics {
+     paintLf: round(perimeterLf + rafterLf),
+     alternateSqft: round(alternateSqft),
+     totalManHours: round(totalManHours),
++    totalPackaging: round(totalPackaging),
+   };
+ }
+ 
+@@ -444,7 +454,13 @@ const valueForCell = (
+     return { quantity, amount: null, pricingType: 'manual', source: 'Approved Man Hours quantity', enabled: true };
+   }
+   if (cell === 'C72') return { quantity: metrics.paintLf, amount: null, pricingType: 'unit', source: 'Pricing Worksheet SUM(E66:E67)', enabled: true };
+-  if (cell === 'C73') return { quantity: getManualQuantity(schema, cell), amount: null, pricingType: 'manual', source: 'stage_4.takeoff.packaging', enabled: true };
++  if (cell === 'C73') {
++  const manualQty = getManualQuantity(schema, cell);
++  const quantity = (manualQty !== null && manualQty > 0)
++    ? manualQty
++    : (metrics.totalPackaging > 0 ? metrics.totalPackaging : (manualQty ?? 0));
++  return { quantity, amount: null, pricingType: 'manual', source: 'Approved Packaging quantity', enabled: true };
++  }
+   if (['C75', 'C76', 'C77', 'C78', 'C79', 'C80', 'C82'].includes(cell)) {
+     const selection = getAdditionalChargeSelection(schema, cell);
+     return {
+@@ -718,6 +734,7 @@ export function calculateFinalParameters(
+       paintLf: metrics.paintLf,
+       alternateSqft: metrics.alternateSqft,
+       totalManHours: metrics.totalManHours,
++      totalPackaging: metrics.totalPackaging,
+     },
+   };
+ }
+diff --git a/src/features/proposal/proposal.service.ts b/src/features/proposal/proposal.service.ts
+index 3b788f7..2250391 100644
+--- a/src/features/proposal/proposal.service.ts
++++ b/src/features/proposal/proposal.service.ts
+@@ -63,9 +63,11 @@ import {
+   isUnitFieldHumanHeld,
+   resolveUnitDescription,
+   resolveUnitManHours,
++  resolveUnitPackaging,
+   toFiniteNumber,
+   unitKeyForDescriptionCell,
+   unitKeyForManHoursCell,
++  unitKeyForPackagingCell,
+ } from './unit-derived-values';
+ import { isUnitQuantityOverrideKey } from './unit-pricing-lines';
+ 
+@@ -690,7 +692,7 @@ export class ProposalService {
+           value_t_rafter_details: unit.value_t_rafter_details,
+           value_layout_source: unit.value_layout_source,
+           value_man_hours: resolveUnitManHours(schema, key),
+-          value_packaging: unit.value_packaging,
++          value_packaging: resolveUnitPackaging(schema, key),
+           value_description: resolveUnitDescription(schema, key),
+         };
+       }
+@@ -720,6 +722,7 @@ export class ProposalService {
+           perimeter_lf: schema.stage_5.calculated?.perimeter_lf?.value ?? calculation.metrics?.perimeterLf,
+           silicone_tubes: schema.stage_5.calculated?.silicone_tubes?.value,
+           total_man_hours: schema.stage_5.calculated?.total_man_hours?.value ?? calculation.metrics?.totalManHours,
++          total_packaging: schema.stage_5.calculated?.total_packaging?.value ?? calculation.metrics?.totalPackaging,
+         },
+       };
+     }
+@@ -1015,6 +1018,17 @@ export class ProposalService {
+       changedPaths.push('stage_5.calculated.total_man_hours');
+     }
+ 
++    else if (cell === 'C73') {
++      if (!currentSchema.stage_5) currentSchema.stage_5 = { _signals: {}, addons: {}, calculated: {} } as any;
++      if (!currentSchema.stage_5.calculated) currentSchema.stage_5.calculated = {} as any;
++      if (!currentSchema.stage_5.calculated.total_packaging) {
++        currentSchema.stage_5.calculated.total_packaging = { value: quantity, status: 'APPROVED' } as any;
++      } else {
++        currentSchema.stage_5.calculated.total_packaging.value = quantity;
++      }
++      changedPaths.push('stage_5.calculated.total_packaging');
++    }
++
+     await this.proposalRepo.appendVersion({
+       projectId,
+       nextSchema: currentSchema,
+@@ -2186,7 +2200,7 @@ export class ProposalService {
+     };
+     canonicalizeContactPhone(scopedPayload);
+ 
+-    // Stage 5 carries per-unit calculated values (man-hours, sqft, weight,
++    // Stage 5 carries per-unit calculated values (man-hours, sqft, weight, packaging,
+     // perimeter, silicone — AI contract §2b) inside `units`. `units` is
+     // owned by Stage 4, so the scoping below would drop the whole map once
+     // Stage 4 is APPROVED — which it always is when Stage 5 runs — and the
+@@ -2197,6 +2211,7 @@ export class ProposalService {
+     // inside deepMergeSchema below.
+     const STAGE5_UNIT_CALC_KEYS = [
+       'value_man_hours',
++      'value_packaging',
+       'value_calculated_sqft',
+       'value_outer_width_in',
+       'value_outer_length_in',
+@@ -2272,6 +2287,20 @@ export class ProposalService {
+       }
+     }
+ 
++    // Same back-fill for packaging: Pricing Worksheet row 73.
++    if (stage === 6 && scopedPayload.stage_6?.cells && typeof scopedPayload.stage_6.cells === 'object') {
++      for (const [address, raw] of Object.entries(scopedPayload.stage_6.cells as Record<string, unknown>)) {
++        const unitKey = unitKeyForPackagingCell(address);
++        const packaging = toFiniteNumber(raw);
++        const unit = unitKey ? nextSchema.units?.[unitKey] : undefined;
++        if (!unit || packaging === null || packaging <= 0) continue;
++        if (toFiniteNumber(unit.value_packaging) !== null) continue;
++        if (isUnitFieldHumanHeld(unit, 'value_packaging')) continue;
++        unit.value_packaging = packaging;
++        changedFieldPaths.push(`units.${unitKey}.value_packaging`);
++      }
++    }
++
+     if (humanOwnedSkipped.length > 0) {
+       console.warn(
+         `[ProposalService] Stage ${stage} push for project ${projectId} tried to overwrite ` +
+@@ -3638,6 +3667,15 @@ export class ProposalService {
+         changedFieldPaths.push('stage_5.calculated.total_man_hours');
+       }
+ 
++      if (calculation.metrics?.totalPackaging !== undefined) {
++        if (!nextSchema.stage_5.calculated.total_packaging) {
++          nextSchema.stage_5.calculated.total_packaging = { value: calculation.metrics.totalPackaging, status: 'APPROVED' } as any;
++        } else {
++          nextSchema.stage_5.calculated.total_packaging.value = calculation.metrics.totalPackaging;
++        }
++        changedFieldPaths.push('stage_5.calculated.total_packaging');
++      }
++
+       if (nextSchema.stage_7) {
+         delete nextSchema.stage_7.computed_snapshot;
+       }
+@@ -3837,6 +3875,18 @@ export class ProposalService {
+           }
+           changedPaths.push('stage_5.calculated.total_man_hours');
+         }
++
++        // Check Packaging (C73) -> update total_packaging
++        if (qtyOverrides['C73'] !== undefined && Number.isFinite(qtyOverrides['C73'])) {
++          const newPackaging = Number(qtyOverrides['C73']);
++          if (!nextSchema.stage_5.calculated.total_packaging) {
++            nextSchema.stage_5.calculated.total_packaging = { value: newPackaging, status: 'APPROVED' } as any;
++          } else {
++            nextSchema.stage_5.calculated.total_packaging.value = newPackaging;
++            nextSchema.stage_5.calculated.total_packaging.status = 'APPROVED';
++          }
++          changedPaths.push('stage_5.calculated.total_packaging');
++        }
+       }
+ 
+       const generated = await this._generateAndPersistProposalExcel(
+diff --git a/src/features/proposal/schema/final-parameters.schema.ts b/src/features/proposal/schema/final-parameters.schema.ts
+index 1844e88..43ac6bf 100644
+--- a/src/features/proposal/schema/final-parameters.schema.ts
++++ b/src/features/proposal/schema/final-parameters.schema.ts
+@@ -164,7 +164,7 @@ export const FINAL_PARAMETERS_SCHEMA: FinalParameterCategorySchema[] = [
+     fields: [
+       { label: "Man Hours", cell: "C71", qtyKey: "stage_5.calculated.total_man_hours" },
+       { label: "Paint by LF", cell: "C72", qtyKey: "stage_5.calculated.perimeter_lf" },
+-      { label: "Packaging", cell: "C73" },
++      { label: "Packaging", cell: "C73", qtyKey: "stage_5.calculated.total_packaging" },
+     ]
+   },
+   {
+diff --git a/src/features/proposal/unit-derived-values.ts b/src/features/proposal/unit-derived-values.ts
+index 6dba71f..2bf87d7 100644
+--- a/src/features/proposal/unit-derived-values.ts
++++ b/src/features/proposal/unit-derived-values.ts
+@@ -1,21 +1,21 @@
+ import type { IProjectSchema } from '@db/models/proposal.model';
+ 
+ /**
+- * Per-unit man hours and proposal descriptions reach the backend through two
+- * different AI channels:
++ * Per-unit man hours, packaging and proposal descriptions reach the backend
++ * through two different AI channels:
+  *
+  *   - Stage 5 writes them onto the unit itself (units.X.value_man_hours,
+- *     units.X.value_description) — the canonical home.
++ *     units.X.value_packaging, units.X.value_description) — the canonical home.
+  *   - Stage 6 re-emits the same values as workbook cells: Pricing Worksheet
+- *     row 71 in each unit's quantity column (E71 = Unit A, H71 = Unit B, ...)
+- *     and Proposal sheet column J on the unit grid (J23 = Unit A, J24 = Unit B,
+- *     ...).
++ *     row 71 (man hours) and row 73 (packaging) in each unit's quantity column
++ *     (E = Unit A, H = Unit B, ...) and Proposal sheet column J on the unit
++ *     grid (J23 = Unit A, J24 = Unit B, ...).
+  *
+  * The unit value always wins; the Stage 6 cell is the fallback for projects
+  * whose Stage 5 per-unit values never persisted (they used to be dropped by the
+  * Stage 4 scoping guard). Every reader — Excel/PDF generation, the Final
+  * Parameters calculator and the approved-stages summary — resolves through
+- * here so they cannot disagree about a unit's hours or wording.
++ * here so they cannot disagree about a unit's hours, packaging or wording.
+  */
+ 
+ export const UNIT_KEYS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] as const;
+@@ -25,6 +25,7 @@ export const UNIT_QUANTITY_COLUMNS = ['E', 'H', 'K', 'N', 'Q', 'T', 'W', 'Z', 'A
+ /** Pricing Worksheet 'y' selection column per unit. */
+ export const UNIT_SELECTION_COLUMNS = ['D', 'G', 'J', 'M', 'P', 'S', 'V', 'Y', 'AB', 'AE'] as const;
+ export const MAN_HOURS_ROW = 71;
++export const PACKAGING_ROW = 73; // NEW
+ 
+ /** Proposal sheet unit grid: row 23 = Unit A ... row 32 = Unit J; J is the merged J:K description. */
+ export const PROPOSAL_UNIT_FIRST_ROW = 23;
+@@ -37,6 +38,12 @@ export const unitManHoursCell = (unitKey: string): string | null => {
+   return index < 0 ? null : `${UNIT_QUANTITY_COLUMNS[index]}${MAN_HOURS_ROW}`;
+ };
+ 
++// NEW
++export const unitPackagingCell = (unitKey: string): string | null => {
++  const index = unitIndex(unitKey);
++  return index < 0 ? null : `${UNIT_QUANTITY_COLUMNS[index]}${PACKAGING_ROW}`;
++};
++
+ export const unitDescriptionCell = (unitKey: string): string | null => {
+   const index = unitIndex(unitKey);
+   return index < 0 ? null : `${PROPOSAL_DESCRIPTION_COLUMN}${PROPOSAL_UNIT_FIRST_ROW + index}`;
+@@ -58,6 +65,15 @@ export const unitKeyForManHoursCell = (address: string): string | null => {
+   return index < 0 ? null : UNIT_KEYS[index]!;
+ };
+ 
++/** Inverse of unitPackagingCell: "H73" -> "B"; anything else -> null. */
++// NEW
++export const unitKeyForPackagingCell = (address: string): string | null => {
++  const match = /^([A-Z]+)(\d+)$/.exec(address);
++  if (!match || Number(match[2]) !== PACKAGING_ROW) return null;
++  const index = (UNIT_QUANTITY_COLUMNS as readonly string[]).indexOf(match[1]!);
++  return index < 0 ? null : UNIT_KEYS[index]!;
++};
++
+ export const toFiniteNumber = (value: unknown): number | null => {
+   if (value === null || value === undefined || value === '') return null;
+   const numeric = typeof value === 'number' ? value : Number(value);
+@@ -79,6 +95,15 @@ export function resolveUnitManHours(schema: IProjectSchema, unitKey: string): nu
+   return cell ? toFiniteNumber(schema.stage_6?.cells?.[cell]) : null;
+ }
+ 
++/** Unit's own packaging first, then the Stage 6 row-73 cell the AI computed for it. */
++// NEW
++export function resolveUnitPackaging(schema: IProjectSchema, unitKey: string): number | null {
++  const own = toFiniteNumber(schema.units?.[unitKey]?.value_packaging);
++  if (own !== null) return own;
++  const cell = unitPackagingCell(unitKey);
++  return cell ? toFiniteNumber(schema.stage_6?.cells?.[cell]) : null;
++}
++
+ /** Unit's own description first, then the Stage 6 Proposal J-cell for its row. */
+ export function resolveUnitDescription(schema: IProjectSchema, unitKey: string): string | null {
+   const own = schema.units?.[unitKey]?.value_description;
+@@ -93,4 +118,4 @@ export const isUnitFieldHumanHeld = (unit: unknown, field: string): boolean => {
+   const meta = (unit as { _meta?: { human_override_fields?: unknown; human_override?: unknown } } | null)?._meta;
+   if (Array.isArray(meta?.human_override_fields)) return meta!.human_override_fields.includes(field);
+   return meta?.human_override === true;
+-};
++};
+\ No newline at end of file

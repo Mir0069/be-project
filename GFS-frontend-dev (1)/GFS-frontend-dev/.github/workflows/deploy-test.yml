@@ -1,0 +1,71 @@
+name: Deploy Frontend to Azure Container Apps (Test)
+
+on:
+  push:
+    branches: [test]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-test:
+    runs-on: ubuntu-latest
+
+    env:
+      ACR_NAME: gfstestacr001
+      RESOURCE_GROUP: rg_GFS_TEST
+      CONTAINER_APP_NAME: fe-gfs
+      IMAGE_NAME: fe-gfs-test
+      AZURE_CONTAINERAPPS_ENVIRONMENT: gfs-env-test
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to ACR
+        run: |
+          az acr login --name $ACR_NAME
+
+      - name: Build Docker Image
+        run: |
+          docker build --no-cache \
+            --build-arg VITE_API_BASE_URL="${{ secrets.VITE_API_BASE_URL_TEST }}" \
+            -t $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} \
+            .
+
+      - name: Push Docker Image
+        run: |
+          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+
+      - name: Verify Container App Exists
+        run: |
+          az containerapp show \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $RESOURCE_GROUP
+
+      - name: Configure Frontend Ingress
+        run: |
+          az containerapp ingress update \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --type external \
+            --target-port 80
+
+      - name: Deploy Frontend
+        run: |
+          az containerapp update \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --image $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} \
+            --cpu 2 \
+            --memory 4Gi \
+            --set-env-vars NODE_ENV=production

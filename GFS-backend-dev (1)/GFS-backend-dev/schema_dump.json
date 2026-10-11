@@ -1,0 +1,1492 @@
+{
+  "stage_1": {
+    "project_name": {
+      "value": "Renovations and Additions to the Wilcox Residence",
+      "status": "APPROVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "C2"
+      },
+      "extracted_value": "Renovations and Additions to the Wilcox Residence",
+      "extracted_confidence": "MEDIUM",
+      "extracted_verbatim": "RENOVATIONS AND ADDITIONS TO THE WILCOX RESIDENCE",
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "confidence": "MEDIUM",
+      "reasoning": [
+        "The sheet title block clearly states the project title line identifying the residence name."
+      ],
+      "flags": [],
+      "updated_by": "extraction"
+    },
+    "project_address": {
+      "value": "159 Poppasquash Road Bristol, RI 02809",
+      "status": "APPROVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "F2"
+      },
+      "extracted_value": "159 Poppasquash Road Bristol, RI 02809",
+      "extracted_confidence": "MEDIUM",
+      "extracted_verbatim": "159 POPPASQUASH ROAD BRISTOL, RI 02809",
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "confidence": "MEDIUM",
+      "reasoning": [
+        "Site address is listed near the project title in the sheet’s title block."
+      ],
+      "flags": [],
+      "updated_by": "extraction"
+    },
+    "contact_name": {
+      "value": "mir",
+      "status": "SAVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "C3"
+      },
+      "extracted_value": null,
+      "extracted_confidence": "LOW",
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "confidence": "LOW",
+      "reasoning": [
+        "No email From: header or web form fields are present on this architectural drawing page; only the architect’s title block is shown, which is not the submitting contact."
+      ],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:27.354Z"
+    },
+    "contact_address": {
+      "value": "66 crescent ",
+      "status": "SAVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "F3"
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": null,
+      "reasoning": [],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:27.354Z"
+    },
+    "contact_phone": {
+      "value": "1234567890",
+      "status": "SAVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "I3"
+      },
+      "extracted_value": null,
+      "extracted_confidence": "LOW",
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "confidence": "LOW",
+      "reasoning": [
+        "No specific customer contact phone is provided; the only phone shown belongs to the architect’s office and is not the submitting contact."
+      ],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:27.354Z"
+    },
+    "contact_email": {
+      "value": "malhaar@amberflux.com",
+      "status": "SAVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "L3"
+      },
+      "extracted_value": null,
+      "extracted_confidence": "LOW",
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "confidence": "LOW",
+      "reasoning": [
+        "No email address for a submitting contact appears on this sheet; only the architect’s website appears."
+      ],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:27.354Z"
+    },
+    "project_type": {
+      "value": "RESIDENTIAL",
+      "status": "APPROVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "C4",
+        "allowed_values": [
+          "RESIDENTIAL",
+          "COMMERCIAL"
+        ]
+      },
+      "extracted_value": "RESIDENTIAL",
+      "extracted_confidence": "MEDIUM",
+      "extracted_verbatim": "RENOVATIONS AND ADDITIONS TO THE WILCOX RESIDENCE",
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "confidence": "MEDIUM",
+      "reasoning": [
+        "Use of the word “RESIDENCE” indicates a home/residential project."
+      ],
+      "flags": [],
+      "updated_by": "extraction"
+    },
+    "architect": {
+      "value": "Brewster Thornton Group",
+      "status": "APPROVED",
+      "_meta": {
+        "manual": false,
+        "excel_cell": "F4"
+      },
+      "extracted_value": "Brewster Thornton Group",
+      "extracted_confidence": "MEDIUM",
+      "extracted_verbatim": "BREWSTER THORNTON GROUP\n317 IRON HORSE WAY. SUITE 202 PROVIDENCE, RI 02908 TEL: 401 . 841 . 1OO brewsterthornton.com",
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "confidence": "MEDIUM",
+      "reasoning": [
+        "Architect’s firm name and contact block appear in the title strip of the drawing sheet."
+      ],
+      "flags": [],
+      "updated_by": "extraction"
+    },
+    "homeowner": {
+      "value": "mir",
+      "status": "SAVED",
+      "_meta": {
+        "manual": true,
+        "excel_cell": "I4"
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": null,
+      "reasoning": [],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:41.724Z"
+    },
+    "drafter_designer": {
+      "value": "mir",
+      "status": "SAVED",
+      "_meta": {
+        "manual": true,
+        "excel_cell": "L4"
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": null,
+      "reasoning": [],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:41.724Z"
+    },
+    "quote_number": {
+      "value": null,
+      "status": "APPROVED",
+      "_meta": {
+        "manual": true,
+        "excel_cell": "I2"
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": null,
+      "reasoning": [],
+      "flags": [],
+      "updated_by": null
+    },
+    "person_quoting": {
+      "value": "mir",
+      "status": "SAVED",
+      "_meta": {
+        "manual": true,
+        "excel_cell": "L2"
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": null,
+      "reasoning": [],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:41.724Z"
+    },
+    "person_checked": {
+      "value": "mir",
+      "status": "SAVED",
+      "_meta": {
+        "manual": true,
+        "excel_cell": "P2"
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": null,
+      "reasoning": [],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-27T18:03:41.724Z"
+    }
+  },
+  "stage_2": {
+    "_signals": {
+      "is_walkable": {
+        "value": true,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": true,
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": "6'-0\" x 6'-0\" GLASS FLOOR",
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "Element is labeled as a \"GLASS FLOOR\" within an interior room; a floor implies pedestrian traffic."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "is_exterior": {
+        "value": false,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": false,
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": "OFFICE SECOND FLOOR / OFFICE-1",
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "The glass floor is located inside the room labeled OFFICE-1 on the second floor; not an exterior balcony or roof."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "has_air_gap": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No glass makeup or IGU/laminated details are referenced on this sheet."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "has_conditioned_space_below": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No glass element is identified; thus conditioned space below cannot be assessed."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "is_stair_tread": {
+        "value": false,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": false,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "There is no indication of stair tread glass; the sheet is a general building section."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "is_egr": {
+        "value": false,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": false,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No mention of EGR/backpaint is present on this page."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "is_replacement_glass_only": {
+        "value": false,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": false,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No language such as “glass only” or “existing frame” is shown for any glass unit."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "is_glass_2_0": {
+        "value": false,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": false,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No “Glass 2.0” terminology appears on this sheet."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      }
+    },
+    "glass_type": {
+      "value": "EGR",
+      "status": "SAVED",
+      "_meta": {
+        "manual": false,
+        "allowed_values": [
+          "GLASS_NO_IGU",
+          "GLASS_WITH_IGU",
+          "GLASS_2_0",
+          "STAIR_TREAD",
+          "NON_WALKABLE",
+          "EGR"
+        ]
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": "LOW",
+      "reasoning": [
+        "[canonical] Reading from Vision canonical signals",
+        "[canonical] Walkable confirmed: '6\\'-0\" x 6\\'-0\" GLASS FLOOR' (MEDIUM) | Element is labeled as a \"GLASS FLOOR\" within an interior room; a floor implies pedestrian traffic.",
+        "[canonical] is_exterior=False: 'OFFICE SECOND FLOOR / OFFICE-1' (MEDIUM) | The glass floor is located inside the room labeled OFFICE-1 on the second floor; not an exterior balcony or roof.",
+        "[canonical] Walkable confirmed but interior/exterior/air_gap context unclear → GLASS_NO_IGU (safe default — GLASS_2_0 is interior floor product only)"
+      ],
+      "flags": [
+        "Walkable confirmed but interior/exterior/air_gap context not found — estimator must confirm glass type"
+      ],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "updated_at": "2026-07-29T02:58:25.004Z"
+    }
+  },
+  "stage_3": {
+    "_signals": {
+      "frame_type_stated": {
+        "value": "NOT_STATED",
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": "NOT_STATED",
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "No GFS frame system names (EconoFrame, Series 1000/2000, etc.) are mentioned."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "install_type": {
+        "value": "PEDESTAL",
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "PEDESTAL",
+            "RECESSED",
+            "DECK_PERIMETER",
+            "NOT_STATED"
+          ]
+        },
+        "extracted_value": "NOT_STATED",
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "Derived from frame type decision"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine"
+      },
+      "is_existing_structure": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": "EXISTING GARAGE SLAB @ FRONT",
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "While the sheet notes existing garage slab elevations, there is no glass opening referenced; per scope rule, do not apply existing/new to glass when no glass element is identified."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "is_new_deck_construction": {
+        "value": false,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": false,
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": "BUILDING SECTIONS — no deck system shown or called out",
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "This is a general building/garage section with no deck references; therefore it is not a deck construction context."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      }
+    },
+    "decision": {
+      "frame_type": {
+        "value": "SERIES_2000_PEDESTAL",
+        "status": "SAVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "SERIES_2000_RECESSED",
+            "SERIES_2000_PEDESTAL",
+            "SERIES_1000_PEDESTAL",
+            "PERIMETER_NON_TB",
+            "DECK_PERIMETER",
+            "ECONOFRAME",
+            "SERIES_3000",
+            "MANUAL"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "MANUAL",
+        "reasoning": [
+          "Unhandled glass_type_code: EGR"
+        ],
+        "flags": [
+          "Unhandled glass type 'EGR' — manual frame selection required"
+        ],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-29T03:32:36.296Z"
+      },
+      "proposal_number": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": null,
+        "reasoning": [],
+        "flags": [],
+        "updated_by": null
+      },
+      "proposal_description": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": true
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": null,
+        "reasoning": [],
+        "flags": [],
+        "updated_by": null
+      },
+      "assembly_type": {
+        "value": "MANUAL",
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "FA",
+            "KD",
+            "MANUAL"
+          ]
+        },
+        "extracted_value": "NOT_STATED",
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MANUAL",
+        "reasoning": [
+          "Derived from frame type decision"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine"
+      }
+    }
+  },
+  "stage_4": {
+    "takeoff": {
+      "panel_count": {
+        "value": 0,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false,
+          "value_type": "integer",
+          "editable": true,
+          "min": 0,
+          "note": "Calculated from approved takeoff units and editable before stage approval."
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Panel count: 4 ([canonical] unit 'A': 4 panels from Vision)",
+          "Multi-panel: 4 panels → 3 vertical rafters, 0 horizontal rafters (estimated)",
+          "Series 2000 → Series 2000 I-Beam only (no T-section option for Series 2000)"
+        ],
+        "flags": [],
+        "updated_by": "system",
+        "updated_at": "2026-07-29T03:33:00.969Z"
+      },
+      "man_hours": {
+        "value": 22,
+        "status": "SAVED",
+        "_meta": {
+          "manual": true,
+          "value_type": "number",
+          "editable": true,
+          "min": 0,
+          "excel_cell": "E69",
+          "note": "Manual labor estimate used by the pricing worksheet."
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": null,
+        "reasoning": [],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-27T18:04:32.925Z"
+      },
+      "packaging": {
+        "value": 3,
+        "status": "SAVED",
+        "_meta": {
+          "manual": true,
+          "value_type": "number",
+          "editable": true,
+          "min": 0,
+          "excel_cell": "E71",
+          "note": "Manual packaging quantity or cost input used by the pricing worksheet."
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": null,
+        "reasoning": [],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-27T18:04:31.180Z"
+      }
+    },
+    "crossbeam": {
+      "value": "I_BEAM_TB_2000",
+      "status": "SAVED",
+      "_meta": {
+        "manual": false,
+        "value_type": "select",
+        "editable": true,
+        "allowed_values": [
+          "T_SECTION_NTB",
+          "T_SECTION_TB",
+          "I_BEAM_TB",
+          "I_BEAM_TB_2000",
+          "SERIES_1000_T_SECTION_TB",
+          "SERIES_1000_I_BEAM_TB",
+          "SERIES_1000_T_SECTION",
+          "SERIES_1000_I_BEAM",
+          "SERIES_2000_T_SECTION_TB",
+          "SERIES_2000_I_BEAM_TB",
+          "SERIES_1000",
+          "SERIES_2000",
+          "MANUAL"
+        ],
+        "note": "Choose the crossbeam series from the Pricing Worksheet options before Stage 4 approval."
+      },
+      "extracted_value": null,
+      "extracted_confidence": null,
+      "extracted_verbatim": null,
+      "extracted_citation": null,
+      "extracted_at": null,
+      "confidence": "HIGH",
+      "reasoning": [
+        "Panel count: 4 ([canonical] unit 'A': 4 panels from Vision)",
+        "Multi-panel: 4 panels → 3 vertical rafters, 0 horizontal rafters (estimated)",
+        "Series 2000 → Series 2000 I-Beam only (no T-section option for Series 2000)"
+      ],
+      "flags": [
+        "Rafter count estimated (4 panels → 3 vertical). Verify from drawings if available."
+      ],
+      "updated_by": "rules_engine",
+      "updated_at": "2026-07-29T02:50:33.865Z"
+    }
+  },
+  "stage_5": {
+    "_signals": {
+      "has_nanodot": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No anti-slip or NanoDot references appear on this sheet."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "has_seeded_organic": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No Seeded Organic references appear on this sheet."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "has_krypton": {
+        "value": null,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": "LOW",
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "LOW",
+        "reasoning": [
+          "No gas fill details are mentioned on this sheet."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "project_country": {
+        "value": "US",
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "US",
+            "CA"
+          ]
+        },
+        "extracted_value": "US",
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": "159 POPPASQUASH ROAD BRISTOL, RI 02809",
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "Rhode Island (RI) and a 5-digit ZIP indicate a United States address."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      },
+      "is_expedited": {
+        "value": false,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": false,
+        "extracted_confidence": "MEDIUM",
+        "extracted_verbatim": "DESIGN DEVELOPMENT - FOR PRICING - 04/29/26",
+        "extracted_citation": null,
+        "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "No rush/expedite language is present; sheet is marked for pricing only."
+        ],
+        "flags": [],
+        "updated_by": "extraction"
+      }
+    },
+    "addons": {
+      "duty": {
+        "value": "y",
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false,
+          "excel_cell": "D90",
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Non-EGR glass — duty applies per GFS policy"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine"
+      },
+      "heat_soak_testing": {
+        "value": "y",
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Weight 2160.0 lbs > 600 lb threshold"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine",
+        "updated_at": "2026-07-27T18:04:36.412Z"
+      },
+      "nanodot": {
+        "value": "y",
+        "status": "SAVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Rules engine addon decision: nanodot"
+        ],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-29T03:33:33.365Z"
+      },
+      "seeded_organic": {
+        "value": "y",
+        "status": "SAVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Rules engine addon decision: seeded_organic"
+        ],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-29T03:33:17.467Z"
+      },
+      "sentry_glass": {
+        "value": "y",
+        "status": "SAVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "MEDIUM",
+        "reasoning": [
+          "Sentry Glass threshold unknown (B1 blocker) — estimator confirm if large panels"
+        ],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-29T03:33:19.306Z"
+      },
+      "krypton_gas": {
+        "value": "y",
+        "status": "SAVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Rules engine addon decision: krypton_gas"
+        ],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-29T03:33:21.146Z"
+      },
+      "custom_shape": {
+        "value": "y",
+        "status": "SAVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Rules engine addon decision: custom_shape"
+        ],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-29T03:33:23.228Z"
+      },
+      "backpaint": {
+        "value": "y",
+        "status": "SAVED",
+        "_meta": {
+          "manual": false,
+          "allowed_values": [
+            "y",
+            "n",
+            "MANUAL",
+            "PENDING"
+          ]
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Rules engine addon decision: backpaint"
+        ],
+        "flags": [],
+        "updated_by": "6a44d7086143b13ec507ccd0",
+        "updated_at": "2026-07-29T03:33:25.007Z"
+      }
+    },
+    "calculated": {
+      "total_sqft": {
+        "value": 144,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Calculated from dimensions"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine",
+        "updated_at": "2026-07-29T03:33:00.969Z"
+      },
+      "total_weight": {
+        "value": 2160,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Calculated from dimensions"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine",
+        "updated_at": "2026-07-29T03:33:00.969Z"
+      },
+      "perimeter_lf": {
+        "value": 60,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Calculated from dimensions"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine",
+        "updated_at": "2026-07-29T03:33:00.969Z"
+      },
+      "silicone_tubes": {
+        "value": 8,
+        "status": "APPROVED",
+        "_meta": {
+          "manual": false
+        },
+        "extracted_value": null,
+        "extracted_confidence": null,
+        "extracted_verbatim": null,
+        "extracted_citation": null,
+        "extracted_at": null,
+        "confidence": "HIGH",
+        "reasoning": [
+          "Calculated from dimensions"
+        ],
+        "flags": [],
+        "updated_by": "rules_engine",
+        "updated_at": "2026-07-29T03:33:00.969Z"
+      }
+    }
+  },
+  "units": {
+    "A": {
+      "unit_id": "A",
+      "status": "SAVED",
+      "value_width_in": 72,
+      "value_length_in": 72,
+      "value_panel_count": 4,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": "Office-1, second floor; above Garage-2 area (line of glass ceiling opening above)",
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 115,
+      "excel_width_cell": "E115",
+      "excel_length_cell": "F115",
+      "excel_panel_cell": "G115",
+      "excel_location_cell": "B115",
+      "excel_drawing_cell": "C113",
+      "excel_num_units_cell": "J115",
+      "excel_vert_rafter_cell": "K115",
+      "excel_horiz_rafter_cell": "L113",
+      "excel_glass_thickness_cell": "M113",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107",
+      "extracted_width_in": 72,
+      "extracted_length_in": 72,
+      "extracted_panel_count": null,
+      "extracted_rafter_count": null,
+      "extracted_verbatim": "LINE OF GLASS CEILING OPENING ABOVE | 6'-0\" x 6'-0\" GLASS FLOOR",
+      "extracted_citation": null,
+      "extracted_at": "2026-07-27T18:02:56.395546+00:00",
+      "extracted_confidence": "MEDIUM",
+      "extracted_location": "Office-1, second floor; above Garage-2 area (line of glass ceiling opening above)",
+      "extracted_dim_type": "GLASS",
+      "reasoning": [
+        "First-floor note indicates the underside line of a glass opening above the garage, which aligns with the second-floor Office-1 6'x6' glass floor; no conflicting dimensions."
+      ],
+      "flags": [],
+      "updated_by": "6a44d7086143b13ec507ccd0",
+      "excel_frame_trigger_cell": null,
+      "excel_beam_trigger_cell": null,
+      "updated_at": "2026-07-27T18:04:23.809Z"
+    },
+    "B": {
+      "unit_id": "B",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 114,
+      "excel_width_cell": "E114",
+      "excel_length_cell": "F114",
+      "excel_panel_cell": "G114",
+      "excel_location_cell": "B114",
+      "excel_drawing_cell": "C114",
+      "excel_num_units_cell": "J114",
+      "excel_vert_rafter_cell": "K114",
+      "excel_horiz_rafter_cell": "L114",
+      "excel_glass_thickness_cell": "M114",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "C": {
+      "unit_id": "C",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 115,
+      "excel_width_cell": "E115",
+      "excel_length_cell": "F115",
+      "excel_panel_cell": "G115",
+      "excel_location_cell": "B115",
+      "excel_drawing_cell": "C115",
+      "excel_num_units_cell": "J115",
+      "excel_vert_rafter_cell": "K115",
+      "excel_horiz_rafter_cell": "L115",
+      "excel_glass_thickness_cell": "M115",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "D": {
+      "unit_id": "D",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 116,
+      "excel_width_cell": "E116",
+      "excel_length_cell": "F116",
+      "excel_panel_cell": "G116",
+      "excel_location_cell": "B116",
+      "excel_drawing_cell": "C116",
+      "excel_num_units_cell": "J116",
+      "excel_vert_rafter_cell": "K116",
+      "excel_horiz_rafter_cell": "L116",
+      "excel_glass_thickness_cell": "M116",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "E": {
+      "unit_id": "E",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 117,
+      "excel_width_cell": "E117",
+      "excel_length_cell": "F117",
+      "excel_panel_cell": "G117",
+      "excel_location_cell": "B117",
+      "excel_drawing_cell": "C117",
+      "excel_num_units_cell": "J117",
+      "excel_vert_rafter_cell": "K117",
+      "excel_horiz_rafter_cell": "L117",
+      "excel_glass_thickness_cell": "M117",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "F": {
+      "unit_id": "F",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 118,
+      "excel_width_cell": "E118",
+      "excel_length_cell": "F118",
+      "excel_panel_cell": "G118",
+      "excel_location_cell": "B118",
+      "excel_drawing_cell": "C118",
+      "excel_num_units_cell": "J118",
+      "excel_vert_rafter_cell": "K118",
+      "excel_horiz_rafter_cell": "L118",
+      "excel_glass_thickness_cell": "M118",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "G": {
+      "unit_id": "G",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 119,
+      "excel_width_cell": "E119",
+      "excel_length_cell": "F119",
+      "excel_panel_cell": "G119",
+      "excel_location_cell": "B119",
+      "excel_drawing_cell": "C119",
+      "excel_num_units_cell": "J119",
+      "excel_vert_rafter_cell": "K119",
+      "excel_horiz_rafter_cell": "L119",
+      "excel_glass_thickness_cell": "M119",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "H": {
+      "unit_id": "H",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 120,
+      "excel_width_cell": "E120",
+      "excel_length_cell": "F120",
+      "excel_panel_cell": "G120",
+      "excel_location_cell": "B120",
+      "excel_drawing_cell": "C120",
+      "excel_num_units_cell": "J120",
+      "excel_vert_rafter_cell": "K120",
+      "excel_horiz_rafter_cell": "L120",
+      "excel_glass_thickness_cell": "M120",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "I": {
+      "unit_id": "I",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 121,
+      "excel_width_cell": "E121",
+      "excel_length_cell": "F121",
+      "excel_panel_cell": "G121",
+      "excel_location_cell": "B121",
+      "excel_drawing_cell": "C121",
+      "excel_num_units_cell": "J121",
+      "excel_vert_rafter_cell": "K121",
+      "excel_horiz_rafter_cell": "L121",
+      "excel_glass_thickness_cell": "M121",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    },
+    "J": {
+      "unit_id": "J",
+      "status": "APPROVED",
+      "value_width_in": null,
+      "value_length_in": null,
+      "value_panel_count": null,
+      "value_rafter_count": null,
+      "value_vertical_rafter_count": null,
+      "value_horizontal_rafter_count": null,
+      "value_num_units": 1,
+      "value_location": null,
+      "value_drawing_number": null,
+      "value_glass_thickness": null,
+      "excel_takeoff_row": 122,
+      "excel_width_cell": "E122",
+      "excel_length_cell": "F122",
+      "excel_panel_cell": "G122",
+      "excel_location_cell": "B122",
+      "excel_drawing_cell": "C122",
+      "excel_num_units_cell": "J122",
+      "excel_vert_rafter_cell": "K122",
+      "excel_horiz_rafter_cell": "L122",
+      "excel_glass_thickness_cell": "M122",
+      "excel_glass_trigger_cell": "D9",
+      "excel_hst_trigger_cell": "D109",
+      "excel_nanodot_trigger_cell": "D110",
+      "excel_seeded_trigger_cell": "D107"
+    }
+  },
+  "pipeline_status": {
+    "extraction_complete": true,
+    "extraction_at": null,
+    "stage_1_status": "APPROVED",
+    "stage_2_status": "APPROVED",
+    "stage_3_status": "APPROVED",
+    "stage_4_status": "APPROVED",
+    "stage_5_status": "APPROVED",
+    "stage_6_status": "APPROVED",
+    "stage_7_status": "APPROVED"
+  },
+  "stage_6": {
+    "status": "PENDING",
+    "cells": {
+      "C10": 140,
+      "C16": 10,
+      "C20": 10,
+      "C107": 481,
+      "C54": 55,
+      "C14": 910,
+      "C109": 55,
+      "C17": 510,
+      "C110": 561,
+      "C41": 1,
+      "C58": 411,
+      "C61": 0.11,
+      "C62": 201,
+      "C63": 91,
+      "C64": 181,
+      "C66": 31,
+      "C67": 31,
+      "C68": 1,
+      "C69": 0.951,
+      "C72": 311,
+      "C73": 1501,
+      "C77": 5401,
+      "C79": 15001,
+      "C80": 16801,
+      "C81": 0.551,
+      "C82": 751
+    }
+  },
+  "stage_7": {
+    "status": "READY",
+    "cost_overrides": {
+      "C9": 73.26,
+      "C10": 124.32,
+      "C11": 134.31,
+      "C12": 109.89,
+      "C13": 78.81,
+      "C14": 910,
+      "C16": 4,
+      "C17": 5,
+      "C20": 7.5,
+      "C21": 20,
+      "C38": 35.040915,
+      "C39": 39.53271,
+      "C40": 32.649435,
+      "C41": 35.679945,
+      "C42": 38.079615,
+      "C45": 20.672625,
+      "C46": 42.166215,
+      "C47": 6.62145,
+      "C59": 4.17263,
+      "C60": 4.81613,
+      "C61": 0.1,
+      "C62": 20,
+      "C63": 9,
+      "C64": 18,
+      "C66": 3,
+      "C67": 3,
+      "C68": 0,
+      "C69": 0.95,
+      "C71": 68,
+      "C72": 31,
+      "C73": 150,
+      "C76": 540,
+      "C77": 540,
+      "C78": 720,
+      "C79": 1500,
+      "C80": 1680,
+      "C81": 0.55,
+      "C82": 75,
+      "C85": 350,
+      "C86": 0.1,
+      "C87": 0.6,
+      "C88": 0.06,
+      "C89": 0.05,
+      "C90": 0.15,
+      "C91": 195,
+      "C93": 0.1,
+      "C94": 0.2,
+      "C107": 48,
+      "C109": 7.5,
+      "C110": 56
+    },
+    "updated_at": "2026-07-29T09:46:26.240Z",
+    "updated_by": "6a44d7086143b13ec507ccd0"
+  }
+}

@@ -1,0 +1,35 @@
+# Ignore docker config files
+Dockerfile
+.dockerignore
+# Remove or comment out the following line
+# Caddyfile
+README.md# Ignore local dependency directories
+node_modules/
+
+# Ignore local build outputs
+dist/
+
+# Ignore version control systems
+.git/
+.gitignore
+
+# Ignore local editor/IDE configs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore local environment config
+.env*.local
+.env
+.env.production
+.env.*
+
+# Ignore docker config files
+Dockerfile
+.dockerignore
+#Caddyfile
+README.md

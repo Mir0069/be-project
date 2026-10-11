@@ -1,0 +1,151 @@
+name: Deploy Backend to Azure Container Apps
+
+
+on:
+  push:
+    branches: [ dev ]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ACR_NAME: gfsacr001
+  RESOURCE_GROUP: rg_GFS
+  CONTAINER_APP_NAME: be-gfs
+  IMAGE_NAME: be-gfs
+  AZURE_CONTAINERAPPS_ENVIRONMENT: gfs-env
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Azure Login using OIDC
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Login to Azure Container Registry
+      - name: Login to ACR
+        run: |
+          az acr login --name $ACR_NAME
+
+      # Build Docker Image
+      - name: Build Docker Image
+        run: |
+          docker build --no-cache \
+            -t $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} \
+            .
+
+      # Push Docker Image
+      - name: Push Docker Image
+        run: |
+          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+
+      # Deploy Backend with Environment Variables
+      - name: Deploy Backend
+        run: |
+          echo "${{ secrets.BACKEND_ENV }}" > .env
+          grep -v '^#' .env | grep -v '^$' > .env.cleaned
+          while IFS='=' read -r key val; do
+            [ -n "$key" ] && export "$key=$val"
+          done < .env.cleaned
+          az containerapp update \
+            --name $CONTAINER_APP_NAME \
+            --resource-group $RESOURCE_GROUP \
+            --image $ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }} \
+            --cpu 4 \
+            --memory 8Gi \
+            --set-env-vars \
+            "NODE_ENV=$NODE_ENV" \
+            "PORT=$PORT" \
+            "API_VERSION=$API_VERSION" \
+            "APP_BASE_URL=$APP_BASE_URL" \
+            "FRONTEND_URL=$FRONTEND_URL" \
+            "VITE_API_BASE_URL=$VITE_API_BASE_URL" \
+            "JWT_SECRET=$JWT_SECRET" \
+            "JWT_ACCESS_EXPIRES_IN=$JWT_ACCESS_EXPIRES_IN" \
+            "JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET" \
+            "JWT_REFRESH_EXPIRES_IN=$JWT_REFRESH_EXPIRES_IN" \
+            "SUPER_ADMIN_PASSWORD=$SUPER_ADMIN_PASSWORD" \
+            "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" \
+            "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" \
+            "MICROSOFT_CLIENT_ID=$MICROSOFT_CLIENT_ID" \
+            "MICROSOFT_CLIENT_SECRET=$MICROSOFT_CLIENT_SECRET" \
+            "MICROSOFT_TENANT_ID=$MICROSOFT_TENANT_ID" \
+            "MICROSOFT_REDIRECT_URI=$MICROSOFT_REDIRECT_URI" \
+            "MONGODB_URI=$MONGODB_URI" \
+            "ZOHO_CLIENT_ID=$ZOHO_CLIENT_ID" \
+            "ZOHO_CLIENT_SECRET=$ZOHO_CLIENT_SECRET" \
+            "ZOHO_REDIRECT_URI=$ZOHO_REDIRECT_URI" \
+            "ZOHO_API_DOMAIN=$ZOHO_API_DOMAIN" \
+            "ZOHO_ACCOUNTS_URL=$ZOHO_ACCOUNTS_URL" \
+            "ZOHO_SCOPES=$ZOHO_SCOPES" \
+            "ZOHO_USE_SANDBOX=$ZOHO_USE_SANDBOX" \
+            "ZOHO_DEFAULT_LEAD_OWNER=$ZOHO_DEFAULT_LEAD_OWNER" \
+            "ZOHO_POLLING_ENABLED=$ZOHO_POLLING_ENABLED" \
+            "ZOHO_POLL_INTERVAL_MS=$ZOHO_POLL_INTERVAL_MS" \
+            "OUTLOOK_CLIENT_ID=$OUTLOOK_CLIENT_ID" \
+            "OUTLOOK_CLIENT_SECRET=$OUTLOOK_CLIENT_SECRET" \
+            "OUTLOOK_TENANT_ID=$OUTLOOK_TENANT_ID" \
+            "OUTLOOK_POLLING_ENABLED=$OUTLOOK_POLLING_ENABLED" \
+            "OUTLOOK_POLL_INTERVAL_MS=$OUTLOOK_POLL_INTERVAL_MS" \
+            "OUTLOOK_FILE_INGEST_ENABLED=$OUTLOOK_FILE_INGEST_ENABLED" \
+            "OUTLOOK_EMAIL_INGEST_ENABLED=$OUTLOOK_EMAIL_INGEST_ENABLED" \
+            "OUTLOOK_DELETE_AFTER_INGEST=$OUTLOOK_DELETE_AFTER_INGEST" \
+            "OUTLOOK_CENTRALIZED_MAILBOX=$OUTLOOK_CENTRALIZED_MAILBOX" \
+            "OUTLOOK_GRAPH_BASE_URL=$OUTLOOK_GRAPH_BASE_URL" \
+            "TEAMS_CLIENT_ID=$TEAMS_CLIENT_ID" \
+            "TEAMS_CLIENT_SECRET=$TEAMS_CLIENT_SECRET" \
+            "TEAMS_TENANT_ID=$TEAMS_TENANT_ID" \
+            "TEAMS_TEST_USER_ID=$TEAMS_TEST_USER_ID" \
+            "TEAMS_POLLING_ENABLED=$TEAMS_POLLING_ENABLED" \
+            "TEAMS_POLL_INTERVAL_MS=$TEAMS_POLL_INTERVAL_MS" \
+            "TEAMS_AUTO_PROVISION_ENABLED=$TEAMS_AUTO_PROVISION_ENABLED" \
+            "TEAMS_AUTO_ADD_MEMBERS_ENABLED=$TEAMS_AUTO_ADD_MEMBERS_ENABLED" \
+            "TEAMS_OWNER_UPN=$TEAMS_OWNER_UPN" \
+            "TEAMS_OWNER_GUID=$TEAMS_OWNER_GUID" \
+            "TEAMS_WEBHOOK_ENABLED=$TEAMS_WEBHOOK_ENABLED" \
+            "TEAMS_WEBHOOK_BASE_URL=$TEAMS_WEBHOOK_BASE_URL" \
+            "TEAMS_WEBHOOK_CLIENT_STATE=$TEAMS_WEBHOOK_CLIENT_STATE" \
+            "TEAMS_AI_DISPATCH_ENABLED=$TEAMS_AI_DISPATCH_ENABLED" \
+            "GRAPH_TENANT_ID=$GRAPH_TENANT_ID" \
+            "GRAPH_CLIENT_ID=$GRAPH_CLIENT_ID" \
+            "GRAPH_CLIENT_SECRET=$GRAPH_CLIENT_SECRET" \
+            "AZURE_STORAGE_CONNECTION_STRING=$AZURE_STORAGE_CONNECTION_STRING" \
+            "AZURE_STORAGE_CONTAINER_NAME=$AZURE_STORAGE_CONTAINER_NAME" \
+            "AZURE_SERVICE_BUS_CONNECTION_STRING=$AZURE_SERVICE_BUS_CONNECTION_STRING" \
+            "AZURE_SERVICE_BUS_AI_QUEUE_NAME=$AZURE_SERVICE_BUS_AI_QUEUE_NAME" \
+            "AZURE_SERVICE_BUS_DLQ_NAME=$AZURE_SERVICE_BUS_DLQ_NAME" \
+            "AZURE_SERVICE_BUS_TEAMS_QUEUE_NAME=$AZURE_SERVICE_BUS_TEAMS_QUEUE_NAME" \
+            "AZURE_SERVICE_BUS_TEAMS_DLQ_NAME=$AZURE_SERVICE_BUS_TEAMS_DLQ_NAME" \
+            "AZURE_SERVICE_BUS_DEFENDER_QUEUE_NAME=$AZURE_SERVICE_BUS_DEFENDER_QUEUE_NAME" \
+            "AZURE_SERVICE_BUS_DEFENDER_DLQ_NAME=$AZURE_SERVICE_BUS_DEFENDER_DLQ_NAME" \
+            "AZURE_SERVICE_BUS_EXTRACTION_STAGE_QUEUE_NAME=$AZURE_SERVICE_BUS_EXTRACTION_STAGE_QUEUE_NAME" \
+            "AZURE_SERVICE_BUS_EXTRACTION_STAGE_DLQ_NAME=$AZURE_SERVICE_BUS_EXTRACTION_STAGE_DLQ_NAME" \
+            "AZURE_SERVICE_BUS_EXTRACTION_RESULT_QUEUE_NAME=$AZURE_SERVICE_BUS_EXTRACTION_RESULT_QUEUE_NAME" \
+            "AZURE_SERVICE_BUS_EXTRACTION_RESULT_DLQ_NAME=$AZURE_SERVICE_BUS_EXTRACTION_RESULT_DLQ_NAME" \
+            "QUEUE_PROVIDER=$QUEUE_PROVIDER" \
+            "MAIL_SENDER=$MAIL_SENDER" \
+            "RATE_LIMIT_WINDOW_MS=$RATE_LIMIT_WINDOW_MS" \
+            "RATE_LIMIT_MAX_REQUESTS=$RATE_LIMIT_MAX_REQUESTS" \
+            "LOG_LEVEL=$LOG_LEVEL" \
+            "DROPBOX_CLIENT_ID=$DROPBOX_CLIENT_ID" \
+            "DROPBOX_CLIENT_SECRET=$DROPBOX_CLIENT_SECRET" \
+            "DROPBOX_REFRESH_TOKEN=$DROPBOX_REFRESH_TOKEN" \
+            "DROPBOX_ROOT_PATH=$DROPBOX_ROOT_PATH" \
+            "DROPBOX_SYNC_INTERVAL_MS=$DROPBOX_SYNC_INTERVAL_MS" \
+            "CLOUD_LINKS_SUPPORTED_EXTENSIONS=$CLOUD_LINKS_SUPPORTED_EXTENSIONS" \
+            "AZURE_SPEECH_KEY=$AZURE_SPEECH_KEY" \
+            "AZURE_SPEECH_REGION=$AZURE_SPEECH_REGION" \
+            "AZURE_SPEECH_ENDPOINT=$AZURE_SPEECH_ENDPOINT" \
+            "AZURE_SPEECH_RESOURCE_NAME=$AZURE_SPEECH_RESOURCE_NAME"

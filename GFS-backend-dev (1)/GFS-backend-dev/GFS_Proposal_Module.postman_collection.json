@@ -1,0 +1,479 @@
+{
+  "info": {
+    "_postman_id": "gfs-proposal-module-v1",
+    "name": "GFS — Proposal Module",
+    "description": "Complete test collection for the Proposal Generation module.\n\n## Setup\n1. Import this collection into Postman.\n2. Set the collection variables (Variables tab):\n   - `baseUrl`      → http://localhost:3000\n   - `apiVersion`   → v1\n   - `projectId`    → a valid MongoDB ObjectId of a project with an active proposal\n   - `revisionNumber` → 0 (auto-updated by POST BOM tests)\n\n## Run Order\nRun folders top-to-bottom. The POST BOM happy path stores `revisionNumber`\nautomatically so subsequent conflict tests work correctly.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",        "value": "${MONGODB_URI}", "type": "string" },
+    { "key": "apiVersion",     "value": "v1",                   "type": "string" },
+    { "key": "projectId",      "value": "507f1f77bcf86cd799439011", "type": "string",
+      "description": "Replace with a real MongoDB ObjectId of a project that has an active proposal" },
+    { "key": "revisionNumber", "value": "0", "type": "string",
+      "description": "Auto-populated by POST BOM test scripts. Start at 0 for first save." },
+    { "key": "revisionNumberAfterA", "value": "0", "type": "string",
+      "description": "Internal — set by Estimator A concurrent test." }
+  ],
+  "item": [
+    {
+      "name": "1 — GET BOM",
+      "description": "Bill of Materials read endpoint",
+      "item": [
+        {
+          "name": "GET BOM — Happy Path",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "description": "Returns BOM DTO generated from current ProposalData.\nAll monetary values are in DOLLARS.\nExpected: 200 with bomGroups (array) and bomTotals (object)."
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "",
+              "pm.test('Has bomGroups array', () => {",
+              "  const b = pm.response.json();",
+              "  pm.expect(b).to.have.property('bomGroups');",
+              "  pm.expect(b.bomGroups).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('Has bomTotals with dollar fields', () => {",
+              "  const { bomTotals } = pm.response.json();",
+              "  ['subtotal','shipping','overhead','profit','total'].forEach(k => {",
+              "    pm.expect(bomTotals).to.have.property(k);",
+              "    pm.expect(typeof bomTotals[k]).to.equal('number');",
+              "  });",
+              "});",
+              "",
+              "pm.test('BOM group names are valid', () => {",
+              "  const valid = ['Glass System','Framing System','Hardware','Fabrication & Labor'];",
+              "  pm.response.json().bomGroups.forEach(g => pm.expect(valid).to.include(g.name));",
+              "});",
+              "",
+              "pm.test('Items use dollar fields NOT cents fields', () => {",
+              "  pm.response.json().bomGroups.forEach(g => {",
+              "    g.items.forEach(item => {",
+              "      pm.expect(item).to.have.property('costPerUnit');",
+              "      pm.expect(item).to.have.property('price');",
+              "      pm.expect(item).to.not.have.property('costPerUnitInCents');",
+              "      pm.expect(item).to.not.have.property('priceInCents');",
+              "    });",
+              "  });",
+              "});"
+            ]}
+          }]
+        },
+        {
+          "name": "GET BOM — Invalid ObjectId (400)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/not-a-valid-id/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","not-a-valid-id","bom"]
+            },
+            "description": "Non-ObjectId string as projectId — Zod rejects before controller.\nExpected: 400 Validation Error"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('success is false', () => pm.expect(pm.response.json().success).to.equal(false));"
+            ]}
+          }]
+        },
+        {
+          "name": "GET BOM — No Proposal Exists (404)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/aabbccddeeff001122334455/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","aabbccddeeff001122334455","bom"]
+            },
+            "description": "Valid ObjectId but no proposal exists for this project.\nExpected: 404 NOT_FOUND"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 404', () => pm.response.to.have.status(404));",
+              "pm.test('Error code NOT_FOUND', () => pm.expect(pm.response.json().error.code).to.equal('NOT_FOUND'));"
+            ]}
+          }]
+        }
+      ]
+    },
+    {
+      "name": "2 — POST BOM (Save Edits)",
+      "description": "Bill of Materials write endpoint",
+      "item": [
+        {
+          "name": "POST BOM — Happy Path (Full Payload)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    {\n      \"name\": \"Glass System\",\n      \"items\": [\n        { \"id\": \"gs-panel-1\", \"name\": \"Glass Panels\",        \"costPerUnit\": 20.19, \"qty\": 30, \"price\": 605.70 },\n        { \"id\": \"gs-opt-1\",   \"name\": \"IGU / Non-IGU variant\", \"costPerUnit\": 10.00, \"qty\": 10, \"price\": 100.00 }\n      ]\n    },\n    {\n      \"name\": \"Framing System\",\n      \"items\": [\n        { \"id\": \"fr-per-1\",  \"name\": \"Series 1000 - Pedestal\",  \"costPerUnit\": 11.11, \"qty\": 20, \"price\": 222.20 },\n        { \"id\": \"fr-per-2\",  \"name\": \"Series 1000 - Beam\",      \"costPerUnit\": 10.00, \"qty\": 10, \"price\": 100.00 },\n        { \"id\": \"fr-raft-1\", \"name\": \"Series 2000 - Pedestal\",  \"costPerUnit\": 9.00,  \"qty\": 9,  \"price\": 81.00  },\n        { \"id\": \"fr-raft-2\", \"name\": \"Series 2000 - With Plate\",\"costPerUnit\": 10.00, \"qty\": 5,  \"price\": 50.00  }\n      ]\n    },\n    {\n      \"name\": \"Hardware\",\n      \"items\": [\n        { \"id\": \"hw-acc-1\",  \"name\": \"Fasteners\",       \"costPerUnit\": 11.11, \"qty\": 20, \"price\": 222.20 },\n        { \"id\": \"hw-acc-2\",  \"name\": \"Mounting Brackets\",\"costPerUnit\": 10.00, \"qty\": 10, \"price\": 100.00 },\n        { \"id\": \"hw-rail-1\", \"name\": \"Custom Gasket\",    \"costPerUnit\": 9.00,  \"qty\": 9,  \"price\": 81.00  }\n      ]\n    },\n    {\n      \"name\": \"Fabrication & Labor\",\n      \"items\": [\n        { \"id\": \"fab-lab-1\", \"name\": \"Man Hours\",          \"costPerUnit\": 11.11, \"qty\": 20, \"price\": 222.20 },\n        { \"id\": \"fab-lab-2\", \"name\": \"Painting / Finishing\",\"costPerUnit\": 10.00, \"qty\": 10, \"price\": 100.00 },\n        { \"id\": \"fab-eng-1\", \"name\": \"Packaging\",           \"costPerUnit\": 9.00,  \"qty\": 10, \"price\": 90.00  }\n      ]\n    }\n  ],\n  \"bomTotals\": {\n    \"subtotal\": 1974.30,\n    \"shipping\":  58.80,\n    \"overhead\": 197.43,\n    \"profit\":   987.15,\n    \"total\":   3217.68\n  },\n  \"revisionNumber\": {{revisionNumber}}\n}"
+            },
+            "description": "Saves user BOM edits. All monetary values in DOLLARS.\n`revisionNumber` maps to Mongoose __v — must match the current document version.\nThe test script stores the returned revisionNumber for subsequent requests."
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "",
+              "pm.test('Response shape: { success: true, revisionNumber }', () => {",
+              "  const b = pm.response.json();",
+              "  pm.expect(b.success).to.equal(true);",
+              "  pm.expect(b).to.have.property('revisionNumber');",
+              "  pm.expect(typeof b.revisionNumber).to.equal('number');",
+              "  pm.expect(b.revisionNumber).to.be.greaterThan(0);",
+              "});",
+              "",
+              "const newRev = pm.response.json().revisionNumber;",
+              "pm.collectionVariables.set('revisionNumber', String(newRev));",
+              "console.log('revisionNumber updated to:', newRev);"
+            ]}
+          }]
+        },
+        {
+          "name": "POST BOM — Empty Items Arrays (Valid)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    { \"name\": \"Glass System\",        \"items\": [] },\n    { \"name\": \"Framing System\",      \"items\": [] },\n    { \"name\": \"Hardware\",            \"items\": [] },\n    { \"name\": \"Fabrication & Labor\", \"items\": [] }\n  ],\n  \"bomTotals\": {\n    \"subtotal\": 0,\n    \"shipping\": 0,\n    \"overhead\": 0,\n    \"profit\":   0,\n    \"total\":    0\n  },\n  \"revisionNumber\": {{revisionNumber}}\n}"
+            },
+            "description": "All item arrays are empty — tests the edge case where a user clears all BOM lines.\nThe mapper handles this safely without crashing.\nExpected: 200"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 200 — empty items arrays are valid', () => pm.response.to.have.status(200));",
+              "const newRev = pm.response.json().revisionNumber;",
+              "if (newRev) pm.collectionVariables.set('revisionNumber', String(newRev));"
+            ]}
+          }]
+        },
+        {
+          "name": "POST BOM — Stale Revision (409 Conflict)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    {\n      \"name\": \"Glass System\",\n      \"items\": [\n        { \"id\": \"gs-panel-1\", \"name\": \"Glass Panels\", \"costPerUnit\": 25.00, \"qty\": 30, \"price\": 750.00 }\n      ]\n    },\n    { \"name\": \"Framing System\",      \"items\": [] },\n    { \"name\": \"Hardware\",            \"items\": [] },\n    { \"name\": \"Fabrication & Labor\", \"items\": [] }\n  ],\n  \"bomTotals\": {\n    \"subtotal\": 750.00,\n    \"shipping\":  10.00,\n    \"overhead\":  75.00,\n    \"profit\":   150.00,\n    \"total\":    985.00\n  },\n  \"revisionNumber\": 0\n}"
+            },
+            "description": "Uses hardcoded revisionNumber: 0 — which is stale if any previous POST BOM\nhas already run. The backend must reject this with 409 STALE_REVISION.\n\nThis simulates Estimator B trying to save with outdated data."
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 409 Conflict', () => pm.response.to.have.status(409));",
+              "pm.test('Error code STALE_REVISION', () => pm.expect(pm.response.json().error.code).to.equal('STALE_REVISION'));",
+              "pm.test('Message mentions concurrent modification', () => {",
+              "  pm.expect(pm.response.json().error.message).to.include('modified by another user');",
+              "});"
+            ]}
+          }]
+        },
+        {
+          "name": "POST BOM — Missing bomGroups (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomTotals\": { \"subtotal\": 100, \"shipping\": 5, \"overhead\": 10, \"profit\": 20, \"total\": 135 },\n  \"revisionNumber\": 0\n}"
+            },
+            "description": "Missing required `bomGroups` field.\nExpected: 400 — Zod catches before controller."
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('success false', () => pm.expect(pm.response.json().success).to.equal(false));"
+            ]}
+          }]
+        },
+        {
+          "name": "POST BOM — Invalid Group Name (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    {\n      \"name\": \"INVALID GROUP — NOT IN ENUM\",\n      \"items\": [{ \"id\": \"x-1\", \"name\": \"Something\", \"costPerUnit\": 10, \"qty\": 1, \"price\": 10 }]\n    }\n  ],\n  \"bomTotals\": { \"subtotal\": 10, \"shipping\": 0, \"overhead\": 0, \"profit\": 0, \"total\": 10 },\n  \"revisionNumber\": 0\n}"
+            },
+            "description": "Group name not in the allowed enum:\n[Glass System, Framing System, Hardware, Fabrication & Labor]\nExpected: 400"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('success false', () => pm.expect(pm.response.json().success).to.equal(false));"
+            ]}
+          }]
+        },
+        {
+          "name": "POST BOM — Negative revisionNumber (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    { \"name\": \"Glass System\",        \"items\": [] },\n    { \"name\": \"Framing System\",      \"items\": [] },\n    { \"name\": \"Hardware\",            \"items\": [] },\n    { \"name\": \"Fabrication & Labor\", \"items\": [] }\n  ],\n  \"bomTotals\": { \"subtotal\": 0, \"shipping\": 0, \"overhead\": 0, \"profit\": 0, \"total\": 0 },\n  \"revisionNumber\": -1\n}"
+            },
+            "description": "revisionNumber must be >= 0 (maps to Mongoose __v which is always non-negative).\nExpected: 400"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('success false', () => pm.expect(pm.response.json().success).to.equal(false));"
+            ]}
+          }]
+        },
+        {
+          "name": "POST BOM — Non-Integer qty (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    {\n      \"name\": \"Glass System\",\n      \"items\": [\n        { \"id\": \"gs-panel-1\", \"name\": \"Glass Panels\", \"costPerUnit\": 20.19, \"qty\": 30.5, \"price\": 605.70 }\n      ]\n    },\n    { \"name\": \"Framing System\",      \"items\": [] },\n    { \"name\": \"Hardware\",            \"items\": [] },\n    { \"name\": \"Fabrication & Labor\", \"items\": [] }\n  ],\n  \"bomTotals\": { \"subtotal\": 605.70, \"shipping\": 0, \"overhead\": 0, \"profit\": 0, \"total\": 605.70 },\n  \"revisionNumber\": 0\n}"
+            },
+            "description": "qty is 30.5 — must be an integer (z.number().int()).\nExpected: 400"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 400 — qty must be integer', () => pm.response.to.have.status(400));"
+            ]}
+          }]
+        }
+      ]
+    },
+    {
+      "name": "3 — GET Excel",
+      "description": "Excel workbook generation endpoint",
+      "item": [
+        {
+          "name": "GET Excel — 501 While Stub Active",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/excel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","excel"]
+            },
+            "description": "While NotImplementedExcelGenerator is active, returns 501.\nOnce a real IExcelGeneratorService is wired in:\n  - Response is a binary .xlsx buffer\n  - Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\n  - Content-Disposition: attachment; filename=\"proposal-{projectId}.xlsx\"\n\nTo download in Postman: click the arrow next to Send → Send and Download"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "if (pm.response.code === 501) {",
+              "  pm.test('501 — stub active (expected)', () => pm.response.to.have.status(501));",
+              "  console.log('Wire a real IExcelGeneratorService to enable Excel download.');",
+              "} else if (pm.response.code === 200) {",
+              "  pm.test('200 — Excel generated', () => pm.response.to.have.status(200));",
+              "  pm.test('Content-Type is xlsx MIME', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type'))",
+              "      .to.include('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');",
+              "  });",
+              "  pm.test('Content-Disposition sets attachment filename', () => {",
+              "    const cd = pm.response.headers.get('Content-Disposition');",
+              "    pm.expect(cd).to.include('attachment');",
+              "    pm.expect(cd).to.include('.xlsx');",
+              "  });",
+              "}"
+            ]}
+          }]
+        },
+        {
+          "name": "GET Excel — Invalid ObjectId (400)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/bad-id/excel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","bad-id","excel"]
+            },
+            "description": "Non-ObjectId projectId — Zod rejects. Expected: 400"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('success false', () => pm.expect(pm.response.json().success).to.equal(false));"
+            ]}
+          }]
+        },
+        {
+          "name": "GET Excel — No Proposal Exists (404)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/aabbccddeeff001122334455/excel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","aabbccddeeff001122334455","excel"]
+            },
+            "description": "Valid ObjectId but no proposal for this project. Expected: 404"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Status 404', () => pm.response.to.have.status(404));",
+              "pm.test('Error code NOT_FOUND', () => pm.expect(pm.response.json().error.code).to.equal('NOT_FOUND'));"
+            ]}
+          }]
+        }
+      ]
+    },
+    {
+      "name": "4 — Concurrent Edit Simulation",
+      "description": "Simulates two estimators editing the same BOM.\nRun [Estimator A] first to advance the revision, then run [Estimator B].\nEstimator B will be rejected with 409 STALE_REVISION.",
+      "item": [
+        {
+          "name": "[Estimator A] Save — Advances Revision",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    {\n      \"name\": \"Glass System\",\n      \"items\": [\n        { \"id\": \"gs-panel-1\", \"name\": \"Glass Panels — Estimator A Edit\", \"costPerUnit\": 21.00, \"qty\": 30, \"price\": 630.00 }\n      ]\n    },\n    { \"name\": \"Framing System\",      \"items\": [] },\n    { \"name\": \"Hardware\",            \"items\": [] },\n    { \"name\": \"Fabrication & Labor\", \"items\": [] }\n  ],\n  \"bomTotals\": { \"subtotal\": 630.00, \"shipping\": 0, \"overhead\": 0, \"profit\": 0, \"total\": 630.00 },\n  \"revisionNumber\": {{revisionNumber}}\n}"
+            },
+            "description": "Estimator A saves using the current revisionNumber.\nStores the new (advanced) revisionNumber in the collection variable.\nEstimator B's request below uses the old stale revision (hardcoded 0)."
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Estimator A save succeeded (200)', () => pm.response.to.have.status(200));",
+              "const newRev = pm.response.json().revisionNumber;",
+              "pm.collectionVariables.set('revisionNumber', String(newRev));",
+              "pm.collectionVariables.set('revisionNumberAfterA', String(newRev));",
+              "console.log('Estimator A saved. New revision:', newRev, '— Estimator B will use stale revision 0.');"
+            ]}
+          }]
+        },
+        {
+          "name": "[Estimator B] Stale Save — Must 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept",       "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/proposal/{{projectId}}/bom",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","{{apiVersion}}","proposal","{{projectId}}","bom"]
+            },
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"bomGroups\": [\n    {\n      \"name\": \"Glass System\",\n      \"items\": [\n        { \"id\": \"gs-panel-1\", \"name\": \"Glass Panels — Estimator B Edit (WILL BE REJECTED)\", \"costPerUnit\": 19.00, \"qty\": 30, \"price\": 570.00 }\n      ]\n    },\n    { \"name\": \"Framing System\",      \"items\": [] },\n    { \"name\": \"Hardware\",            \"items\": [] },\n    { \"name\": \"Fabrication & Labor\", \"items\": [] }\n  ],\n  \"bomTotals\": { \"subtotal\": 570.00, \"shipping\": 0, \"overhead\": 0, \"profit\": 0, \"total\": 570.00 },\n  \"revisionNumber\": 0\n}"
+            },
+            "description": "Estimator B sends revisionNumber: 0 — which is stale because Estimator A already\nadvanced it. The backend's dual-layer optimistic lock must reject this.\n\nExpected: 409 STALE_REVISION"
+          },
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": [
+              "pm.test('Estimator B rejected 409', () => pm.response.to.have.status(409));",
+              "pm.test('Error code STALE_REVISION', () => pm.expect(pm.response.json().error.code).to.equal('STALE_REVISION'));",
+              "pm.test('Message says concurrent edit', () => {",
+              "  pm.expect(pm.response.json().error.message).to.include('modified by another user');",
+              "});",
+              "console.log('Optimistic lock works. Estimator B must reload and re-apply edits.');"
+            ]}
+          }]
+        }
+      ]
+    }
+  ]
+}
